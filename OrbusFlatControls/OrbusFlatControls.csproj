@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>OrbusFlatControls</AssemblyName>
+    <RootNamespace>OrbusFlatControls</RootNamespace>
+    <GameDir Condition="'$(GameDir)' == ''">$(OrbusGameDir)</GameDir>
+    <MelonLoaderRoot Condition="'$(MelonLoaderRoot)' == ''">$(GameDir)\MelonLoader</MelonLoaderRoot>
+    <Il2CppAssembliesDir Condition="'$(Il2CppAssembliesDir)' == ''">$(MelonLoaderRoot)\Il2CppAssemblies</Il2CppAssembliesDir>
+    <MelonLoaderDll Condition="'$(MelonLoaderDll)' == '' and Exists('$(MelonLoaderRoot)\net6\MelonLoader.dll')">$(MelonLoaderRoot)\net6\MelonLoader.dll</MelonLoaderDll>
+    <MelonLoaderDll Condition="'$(MelonLoaderDll)' == ''">$(MelonLoaderRoot)\MelonLoader.dll</MelonLoaderDll>
+    <MelonLoaderRuntimeDir Condition="'$(MelonLoaderRuntimeDir)' == '' and Exists('$(MelonLoaderRoot)\net6\Il2CppInterop.Runtime.dll')">$(MelonLoaderRoot)\net6</MelonLoaderRuntimeDir>
+    <MelonLoaderRuntimeDir Condition="'$(MelonLoaderRuntimeDir)' == ''">$(MelonLoaderRoot)</MelonLoaderRuntimeDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>$(MelonLoaderDll)</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony" Condition="Exists('$(MelonLoaderRuntimeDir)\0Harmony.dll')">
+      <HintPath>$(MelonLoaderRuntimeDir)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime" Condition="Exists('$(MelonLoaderRuntimeDir)\Il2CppInterop.Runtime.dll')">
+      <HintPath>$(MelonLoaderRuntimeDir)\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Common" Condition="Exists('$(MelonLoaderRuntimeDir)\Il2CppInterop.Common.dll')">
+      <HintPath>$(MelonLoaderRuntimeDir)\Il2CppInterop.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib" Condition="Exists('$(Il2CppAssembliesDir)\Il2Cppmscorlib.dll')">
+      <HintPath>$(Il2CppAssembliesDir)\Il2Cppmscorlib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(Il2CppAssembliesDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(Il2CppAssembliesDir)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(Il2CppAssembliesDir)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="ValidateGameReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(GameDir)' == ''" Text="Pass -p:GameDir=&quot;C:\path\to\the\game&quot; (the folder containing the game executable)." />
+    <Error Condition="!Exists('$(MelonLoaderDll)')" Text="MelonLoader.dll was not found under $(MelonLoaderRoot). Install/run MelonLoader once, or pass -p:MelonLoaderDll=... ." />
+    <Error Condition="!Exists('$(Il2CppAssembliesDir)\UnityEngine.CoreModule.dll')" Text="UnityEngine.CoreModule.dll was not found under $(Il2CppAssembliesDir). Build against the target game's MelonLoader-generated Il2CppAssemblies." />
+    <Error Condition="!Exists('$(Il2CppAssembliesDir)\UnityEngine.IMGUIModule.dll')" Text="UnityEngine.IMGUIModule.dll was not found under $(Il2CppAssembliesDir)." />
+    <Error Condition="!Exists('$(Il2CppAssembliesDir)\UnityEngine.InputLegacyModule.dll')" Text="UnityEngine.InputLegacyModule.dll was not found under $(Il2CppAssembliesDir). This mod needs the Unity legacy keyboard/mouse input module." />
+  </Target>
+</Project>
